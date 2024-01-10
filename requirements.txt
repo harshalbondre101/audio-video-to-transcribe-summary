@@ -1,0 +1,4 @@
+openai # OpenAI's Python library for API access
+streamlit # Streamlit framework for building web applications
+moviepy  # MoviePy library for video editing tasks
+python-docx # python-docx for handling Word (.docx) files
