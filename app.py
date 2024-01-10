@@ -83,6 +83,18 @@ def process_video_and_transcribe(uploaded_file):
 
                     doc.save("transcription_summary.docx")
                     st.success("Transcription and Summary saved in 'transcription_summary.docx'")
+                    # Add download button for the generated docx file
+                    file_name = "transcription_summary.docx"
+                    with open(file_name, "rb") as file:
+                        btn = st.download_button(
+                            label="Download Transcription Summary",
+                            data=file,
+                            file_name=file_name,
+                            mime="application/octet-stream",
+                        )
+                        
+                    if btn:
+                        st.success("File downloaded successfully!")
 
                     
         else:
