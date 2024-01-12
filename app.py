@@ -6,7 +6,7 @@ from docx import Document
 model = "gpt-3.5-turbo-16k"
 
 # Initialize the OpenAI client
-client = OpenAI(api_key="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")
+client = OpenAI(api_key="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")
 
 # Function to transcribe audio content
 def transcribe_audio(audio_content):
