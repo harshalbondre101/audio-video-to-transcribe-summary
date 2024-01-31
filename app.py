@@ -5,8 +5,9 @@ from docx import Document
 
 model = "gpt-3.5-turbo-16k"
 
-# Initialize the OpenAI client
-client = OpenAI(api_key="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")
+# Streamlit input for the OpenAI API key
+api_key = st.text_input("Enter your OpenAI API Key:")
+client = OpenAI(api_key=api_key)
 
 # Function to transcribe audio content
 def transcribe_audio(audio_content):
