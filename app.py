@@ -52,57 +52,68 @@ Sentiment Analysis:
     response_message = response.choices[0].message.content
     return response_message   
 
-# Function to extract audio from video and transcribe it
-def process_video_and_transcribe(uploaded_file):
+# Function to transcribe video or audio file
+def process_media_and_transcribe(uploaded_file):
     try:
-        with open(uploaded_file.name, "wb") as file_writer:
-            file_writer.write(uploaded_file.getbuffer())
-
         if uploaded_file.type == "video/mp4":
+            # Process video file
+            with open(uploaded_file.name, "wb") as file_writer:
+                file_writer.write(uploaded_file.getbuffer())
+
             video = VideoFileClip(uploaded_file.name)
             audio_path = "extracted_audio.wav"
             video.audio.write_audiofile(audio_path, codec='pcm_s16le', fps=44100)
-            st.audio(audio_path, format='audio/wav')
 
-            with open(audio_path, 'rb') as audio_file:
-                transcript = transcribe_audio(audio_file)
-                if transcript:
-                    st.subheader("Transcription:")
-                    st.text(transcript.text)
+        elif uploaded_file.type.startswith("audio/"):
+            # Process audio file directly
+            with open(uploaded_file.name, "wb") as file_writer:
+                file_writer.write(uploaded_file.getbuffer())
 
-                    st.subheader("Summary:")
-                    summary = summarize_transcribe(transcript.text)
-                    st.text(summary)
-                    
-                    # Create a .docx document and save the transcription and summary
-                    doc = Document()
-                    doc.add_heading('Transcription', level=1)
-                    doc.add_paragraph(transcript.text)
+            audio_path = uploaded_file.name
 
-                    doc.add_heading('Summary', level=1)
-                    doc.add_paragraph(summary)
-
-                    doc.save("transcription_summary.docx")
-                    st.success("Transcription and Summary saved in 'transcription_summary.docx'")
-                    # Add download button for the generated docx file
-                    file_name = "transcription_summary.docx"
-                    with open(file_name, "rb") as file:
-                        btn = st.download_button(
-                            label="Download Transcription Summary",
-                            data=file,
-                            file_name=file_name,
-                            mime="application/octet-stream",
-                        )
-                        
-                    if btn:
-                        st.success("File downloaded successfully!")
-
-                    
         else:
-            st.warning("Please upload a video file.")
+            st.warning("Please upload a valid video or audio file.")
+            return
+
+        st.audio(audio_path, format='audio/wav')
+
+        with open(audio_path, 'rb') as audio_file:
+            transcript = transcribe_audio(audio_file)
+            if transcript:
+                st.subheader("Transcription:")
+                st.text(transcript.text)
+
+                st.subheader("Summary:")
+                summary = summarize_transcribe(transcript.text)
+                st.text(summary)
+                
+                # Create a .docx document and save the transcription and summary
+                doc = Document()
+                doc.add_heading('Transcription', level=1)
+                doc.add_paragraph(transcript.text)
+
+                doc.add_heading('Summary', level=1)
+                doc.add_paragraph(summary)
+
+                doc.save("transcription_summary.docx")
+                st.success("Transcription and Summary saved in 'transcription_summary.docx'")
+                
+                # Add download button for the generated docx file
+                file_name = "transcription_summary.docx"
+                with open(file_name, "rb") as file:
+                    btn = st.download_button(
+                        label="Download Transcription Summary",
+                        data=file,
+                        file_name=file_name,
+                        mime="application/octet-stream",
+                    )
+                    
+                if btn:
+                    st.success("File downloaded successfully!")
 
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
+
 
 # Streamlit app
 def main():
